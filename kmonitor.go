@@ -157,6 +157,7 @@ func (m *KMonitor) postToMonitor(req *KMonitorReportReq) {
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "EOF") {
 			//暂时不记录
+			log.Error("monitor error,error:%s,res:%v,data:%v",err,res,string(b))
 		} else {
 			//srvlog.Error("monitor error", "err", err, "res", res, "data", string(b))
       log.Error("monitor error,error:%s,res:%v,data:%v",err,res,string(b))
