@@ -169,7 +169,7 @@ func (m *KMonitor) getMonitorData() *KMonitorReportReq {
 	req := &KMonitorReportReq{}
 	//req.T = time.Now().Format(time.RFC3339)
 	req.T = time.Now().Format("06-01-02 15:04:05")
-	req.P = "wx_api_service"
+	req.P = kmonitorKey
 	req.R = make([]KMonitorReportReqData, 0)
 
 	data := m.data
