@@ -13,6 +13,12 @@ type ModelMessageMsgBoxInfo struct {
     AppCode string `json:"appCode"`
 }
 
+type ModelMessageMsgBoxChannel struct {
+    MsgBoxUrl string
+    MqData ModelMessageMsgBoxInfo
+    LimitNum uint8
+}
+
 func ModelMessageNewMsgInfo(msgType uint8, sourceId string, appCode string, content string) (ModelMessageMsgBoxInfo) {
     data := ModelMessageMsgBoxInfo{}
     data.MsgType = msgType
