@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"time"
 	"fmt"
+	"math/rand"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 	esfUrl string
 	esfTicker *time.Ticker
 )
-//func EsfCmdInit 初始化
+//EsfCmdInit 初始化
 func EsfCmdInit(esfGetUrl string,cmdList []string,esfCmdLog ILog, updateDuration time.Duration){
 
 	if log ==nil{
@@ -44,7 +45,7 @@ func EsfCmdInit(esfGetUrl string,cmdList []string,esfCmdLog ILog, updateDuration
 }
 
 
-//func EsfCmdGetAddr 初始化
+//EsfCmdGetAddr 获取命令字服务器地址
 func EsfCmdGetAddr(cmd32 uint32, defaultAddr string) (strAddr []string){
 	cmd := fmt.Sprintf("%x",cmd32 / 0xffff)
 
@@ -68,7 +69,23 @@ func EsfCmdGetAddr(cmd32 uint32, defaultAddr string) (strAddr []string){
 	}
 	return strAddr
 }
+//EsfCmdGetAddrRandom 获取命令字服务器地址，随机取一个
+func EsfCmdGetAddrRandom(cmd uint32,defaultAddr string)(strAddr string){
+	a := EsfCmdGetAddr(cmd,defaultAddr)
 
+	if len(a) ==0{
+		strAddr = defaultAddr
+	}else if len(a) ==1{
+		strAddr = a[0]
+	}else{
+		rand.Seed(time.Now().UnixNano())
+
+		i := rand.Intn(len(a))
+
+		strAddr = a[i]
+	}
+	return
+}
 
 func esfCmdGetAddressByCmd(cmd string)(addrs []EsfCmdAddr){
 

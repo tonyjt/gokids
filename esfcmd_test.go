@@ -17,7 +17,7 @@ func Test_EsfCmdInit(t *testing.T) {
 	EsfCmdInit(url,c,NewLogDefault(),5 * time.Second)
 }
 
-func Test_EsfCmdGetAddressByCmd(t *testing.T){
+func Test_EsfCmdGetAddr(t *testing.T){
 	Test_EsfCmdInit(t)
 
 	a := EsfCmdGetAddr(0x40061802,"172.172.200.28:53101")
@@ -26,4 +26,17 @@ func Test_EsfCmdGetAddressByCmd(t *testing.T){
 		t.Errorf("addr is empty")
 	}
 	log.Info("%v",a)
+}
+
+func Test_EsfCmdGetAddrRandom(t *testing.T){
+	Test_EsfCmdInit(t)
+
+	for i:=0;i<100;i++{
+		a := EsfCmdGetAddrRandom(0x40061802,"172.172.200.28:53101")
+
+		if len(a) == 0{
+			t.Errorf("addr is empty")
+		}
+		log.Info("%v",a)
+	}
 }
