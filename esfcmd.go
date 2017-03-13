@@ -8,10 +8,12 @@ import (
 	"time"
 	"fmt"
 	"math/rand"
+	"sync"
 )
 
 var (
 	esfAddr map[string][]EsfCmdAddr
+	esfAddrM sync.RWMutex
 	esfUrl string
 	esfTicker *time.Ticker
 )
@@ -53,8 +55,9 @@ func EsfCmdGetAddr(cmd32 uint32, defaultAddr string) (strAddr []string){
 
 	if !ok || len(ars) ==0{
 		ars = esfCmdGetAddressByCmd(cmd)
-
+		esfAddrM.Lock()
 		esfAddr[cmd] = ars
+		esfAddrM.Unlock()
 	}
 
 	for _,a := range ars{
@@ -135,7 +138,9 @@ func esfStartTicker(){
 		for cmd,_ := range esfAddr{
 			addrs := esfCmdGetAddressByCmd(cmd)
 			if len(addrs) >0{
+				esfAddrM.Lock()
 				esfAddr[cmd] = addrs
+				esfAddrM.Unlock()
 			}
 		}
 	}
