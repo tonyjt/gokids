@@ -15,10 +15,9 @@ type KMonitor struct {
 
 // 每个Url的计数器
 type KMonitorKeyData struct {
-	Url         string
-	TotalCount  int64
-	SucessCount int64
-	Duration    int64
+	TotalCount   int64
+	SuccessCount int64
+	Duration     int64
 }
 
 // 每个请求的处理结果
