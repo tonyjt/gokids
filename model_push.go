@@ -5,7 +5,6 @@ import (
 )
 
 type ModelPushApiTaskInfo struct {
-    TaskCode string `json:"taskCode"`
     Name string `json:"name"`
     StartTime string `json:"startTime"`
     FailureTime string `json:"failureTime"`
@@ -17,6 +16,7 @@ type ModelPushApiTaskInfo struct {
 }
 
 type ModelPushApiResponseInfo struct {
+    Content uint64 `json:"content"`
     ErrorCode string `json:"errorCode"`
     Meg string `json:"msg"`
     Success bool `json:"success"`
@@ -36,18 +36,16 @@ type ModelPushMqOcmTaskRowsInfo struct {
     Params string `json:"params"`
 }
 
-//指定uid推送信息
-func ModelPushGetApiTaskInfo(taskCodePrefix string, taskCode string, startTime time.Time, sourceSystem string,
+func ModelPushGetApiTaskInfo(taskType string, startTime time.Time, sourceSystem string,
     aimSystem string, content string) (ModelPushApiTaskInfo) {
     info := ModelPushApiTaskInfo{}
-    info.TaskCode = taskCodePrefix + taskCode
     info.Name = "message"
     info.StartTime = UtilTimeGetCommonDateYdmHis(startTime)
     info.FailureTime = UtilTimeGetCommonDateYdmHis(UtilTimeFewDaysLater(startTime, 1))
     info.Content = content
     info.SourceSystem = sourceSystem
     info.AimSystem = aimSystem
-    info.TaskType = "2"
+    info.TaskType = taskType
 
     return info
 }
