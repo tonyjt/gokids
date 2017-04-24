@@ -149,7 +149,7 @@ func (m *KMonitor) postToMonitor(req *KMonitorReportReq) {
 	data.Add("c", "0")
 	data.Add("d", "["+string(b)+"]")
 
-	fmt.Println(kmonitorReportUrl, string(b))
+	//fmt.Println(kmonitorReportUrl, string(b))
 
 	//res, err := postForms(kmonitorReportUrl, form)
 	res, err := http.PostForm(kmonitorReportUrl, data)
