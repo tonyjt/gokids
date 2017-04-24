@@ -1,22 +1,24 @@
 package gokids
 
 import (
-    "strconv"
     "time"
     "net/url"
     "encoding/json"
     "errors"
 )
 
-func PushSendOcmTask(mqPushUrl string, mqKey string, pushServiceUrl string, taskCodePrefix string, taskCode string, startTime time.Time, sourceSystem string,
+func PushSendOcmTask(mqPushUrl string, mqKey string, pushServiceUrl string, taskType string, startTime time.Time, sourceSystem string,
     aimSystem string, content string, uids []uint64) (error) {
     /*
         1、发送任务
         2、配置任务和用户到mq(推送)
     */
-    taskId, b := PushApiAddTask(pushServiceUrl, taskCodePrefix, taskCode, startTime, sourceSystem, aimSystem, content)
+    taskId, b := PushApiAddTask(pushServiceUrl, taskType, startTime, sourceSystem, aimSystem, content)
     if !b {
-        return errors.New("gokids push add task api error" + pushServiceUrl + taskCodePrefix + taskCode + startTime.String() + sourceSystem + aimSystem + content)
+        return errors.New("gokids push add task api error" + pushServiceUrl + taskType + startTime.String() + sourceSystem + aimSystem + content)
+    }
+    if taskType != "2" {
+        return nil
     }
     err := PushAddTaskToMq(mqPushUrl, mqKey, taskId, uids)
     if err != nil {
@@ -27,14 +29,11 @@ func PushSendOcmTask(mqPushUrl string, mqKey string, pushServiceUrl string, task
 }
 
 //添加推送任务
-func PushApiAddTask(serviceUrl string, taskCodePrefix string, taskCode string, startTime time.Time, sourceSystem string,
+func PushApiAddTask(serviceUrl string, taskType string, startTime time.Time, sourceSystem string,
     aimSystem string, content string) (int, bool) {
-    queryData := ModelPushGetApiTaskInfo(taskCodePrefix, taskCode, startTime, sourceSystem, aimSystem, content)
-
-    taskCodeInt, _ := strconv.Atoi(queryData.TaskCode)
+    queryData := ModelPushGetApiTaskInfo(taskType, startTime, sourceSystem, aimSystem, content)
 
     params := make(url.Values)
-    params.Set("taskCode", queryData.TaskCode)
     params.Set("name", queryData.Name)
     params.Set("startTime", queryData.StartTime)
     params.Set("failureTime", queryData.FailureTime)
@@ -48,7 +47,8 @@ func PushApiAddTask(serviceUrl string, taskCodePrefix string, taskCode string, s
     serviceUrl += "?" + paramsStr
     ret, err := UtilCurlGet(serviceUrl, header)
     if err != nil {
-        return taskCodeInt, false
+        log.Error("push neibu api add task error query: %s error: %s", paramsStr, err.Error())
+        return 0, false
     }
     data := ModelPushApiResponseInfo{}
     err = json.Unmarshal(ret, &data)
@@ -57,7 +57,7 @@ func PushApiAddTask(serviceUrl string, taskCodePrefix string, taskCode string, s
         log.Error("push neibu api add task error query: %s error: %s", paramsStr, err.Error())
     }
 
-    return taskCodeInt, data.Success
+    return int(data.Content), data.Success
 }
 
 //配置推送任务到mq
