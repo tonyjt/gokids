@@ -1,6 +1,7 @@
 package gokids
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,8 +21,15 @@ func KucodeVerify(identity string, appCode string, appServiceCode string, verify
 		result = false
 		return
 	}
+	base64Identity := base64.StdEncoding.EncodeToString([]byte(identity))
 
-	url := fmt.Sprintf("%s?identity=%s&appCode=%s&appServiceCode=%s&verifyCode=%s", u, identity, appCode, appServiceCode, verifyCode)
+	base64AppCode := base64.StdEncoding.EncodeToString([]byte(appCode))
+
+	base64AppServiceCode := base64.StdEncoding.EncodeToString([]byte(appServiceCode))
+
+	base64VerifyCode := base64.StdEncoding.EncodeToString([]byte(verifyCode))
+
+	url := fmt.Sprintf("%s?identity=%s&appCode=%s&appServiceCode=%s&verifyCode=%s", u, base64Identity, base64AppCode, base64AppServiceCode, base64VerifyCode)
 
 	res, err := http.Get(url)
 

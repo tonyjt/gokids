@@ -7,10 +7,10 @@ func TestKucodeVerify(t *testing.T) {
 
 	u := "http://test.verifycode.haiziwang.com/ucode-web/ucode/check.do"
 
-	identity := "1234"
+	identity := "123456"
 	appCode := "xxr-membergo"
-	appServiceCode := "kidslogin"
-	vc := "3952"
+	appServiceCode := "100"
+	vc := "2715"
 
 	result, err := KucodeVerify(identity, appCode, appServiceCode, vc, u)
 
