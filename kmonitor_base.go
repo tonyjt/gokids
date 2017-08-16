@@ -1,26 +1,26 @@
 package gokids
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
-	"encoding/json"
-	"net/url"
 	"time"
-	"errors"
-	"net/http"
-	"fmt"
 )
 
 var (
 	kMonitorHostNanme string
-	kmonitor *KMonitor
+	kmonitor          *KMonitor
 	kmonitorReportUrl string
-	kmonitorKey string
+	kmonitorKey       string
 )
 
 //Base Kmonitor methods
 //KMonitorBaseInit init when process start
-func KMonitorBaseInit(reportUrl string, kmonitorLog ILog){
+func KMonitorBaseInit(reportUrl string, kmonitorLog ILog) {
 	kMonitorHostNanme, _ = os.Hostname()
 	kmonitorReportUrl = reportUrl
 	log = kmonitorLog
@@ -29,31 +29,31 @@ func KMonitorBaseInit(reportUrl string, kmonitorLog ILog){
 }
 
 //KMonitorBaseReport report after calling
-func KMonitorBaseReport(productKey string, key string,source string,result bool,duration int64) error{
-	if kmonitor ==nil{
+func KMonitorBaseReport(productKey string, key string, source string, result bool, duration int64) error {
+	if kmonitor == nil {
 		return errors.New("kmonitor not init")
 	}
 
 	source = strings.Trim(source, " ")
 
-	key =strings.Trim(key, " ")
+	key = strings.Trim(key, " ")
 
 	if key == "" {
 		return errors.New("parameter key is empty")
 	}
 
-	if source !=""{
-		key =key + "_"+source
+	if source != "" {
+		key = key + "_" + source
 	}
 
 	reqStatus := KMonitorReqStatus{}
 
 	reqStatus.ProductKey = productKey
 	reqStatus.Key = key
-	if result{
-		reqStatus.Status =1
-	}else{
-		reqStatus.Status =0
+	if result {
+		reqStatus.Status = 1
+	} else {
+		reqStatus.Status = 0
 	}
 	reqStatus.Duration = duration
 
@@ -62,7 +62,7 @@ func KMonitorBaseReport(productKey string, key string,source string,result bool,
 	return nil
 }
 
-func newKMonitor() *KMonitor{
+func newKMonitor() *KMonitor {
 	m := &KMonitor{}
 	m.data = make(map[string]*KMonitorKeyData)
 	//m.C = make(chan string, 100000)
@@ -77,7 +77,7 @@ func (m *KMonitor) start() {
 	go m.startTicker()
 }
 
-func (m *KMonitor) add(v KMonitorReqStatus){
+func (m *KMonitor) add(v KMonitorReqStatus) {
 	m.Lock()
 	defer m.Unlock()
 
@@ -152,7 +152,7 @@ func (m *KMonitor) postToMonitor(req *KMonitorReportReq) {
 	//fmt.Println(kmonitorReportUrl, string(b))
 
 	//res, err := postForms(kmonitorReportUrl, form)
-	res, err := http.PostForm(kmonitorReportUrl, data)
+	_, err := http.PostForm(kmonitorReportUrl, data)
 	//fmt.Println("post to monito", err, string(res))
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "EOF") {
@@ -160,7 +160,7 @@ func (m *KMonitor) postToMonitor(req *KMonitorReportReq) {
 			//log.Error("monitor error,error:%s,res:%v,data:%v",err,res,string(b))
 		} else {
 			//srvlog.Error("monitor error", "err", err, "res", res, "data", string(b))
-			log.Error("monitor error,error:%s,res:%v,data:%v",err,res,string(b))
+			//log.Error("monitor error,error:%s,res:%v,data:%v",err,res,string(b))
 		}
 	}
 }
